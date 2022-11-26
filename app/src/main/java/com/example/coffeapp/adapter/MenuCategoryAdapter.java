@@ -40,8 +40,8 @@ public class MenuCategoryAdapter
     public void onBindViewHolder(@NonNull MenuCategoryViewHolder holder, int position) {
         holder.menuCategoryLabel.setText(menuCategories.get(position).getTitle());
 
-//        holder.itemView.setOnClickListener(view ->
-//                MainActivity.showMenuElementsByCategory(menuCategories.get(position).getId()));
+        holder.itemView.setOnClickListener(view ->
+                MainActivity.showMenuElementsByCategory(menuCategories.get(position).getId()));
     }
 
     @Override
