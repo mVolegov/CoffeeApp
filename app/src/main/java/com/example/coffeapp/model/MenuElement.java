@@ -2,6 +2,7 @@ package com.example.coffeapp.model;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.List;
 
 public class MenuElement implements Serializable {
 
@@ -9,20 +10,16 @@ public class MenuElement implements Serializable {
     private String name;
     private BigDecimal price;
     private String description;
-    private MenuCategory category;
+    private List<MenuCategory> categories;
 
     public MenuElement() {}
 
-    public MenuElement(int id,
-                       String name,
-                       BigDecimal price,
-                       String description,
-                       MenuCategory category) {
+    public MenuElement(int id, String name, BigDecimal price, String description, List<MenuCategory> categories) {
         this.id = id;
         this.name = name;
         this.price = price;
         this.description = description;
-        this.category = category;
+        this.categories = categories;
     }
 
     public int getId() {
@@ -57,11 +54,11 @@ public class MenuElement implements Serializable {
         this.description = description;
     }
 
-    public MenuCategory getCategory() {
-        return category;
+    public List<MenuCategory> getCategories() {
+        return categories;
     }
 
-    public void setCategory(MenuCategory category) {
-        this.category = category;
+    public void setCategories(List<MenuCategory> categories) {
+        this.categories = categories;
     }
 }

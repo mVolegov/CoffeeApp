@@ -18,7 +18,7 @@ public class ApiMenuCategories {
 
     public ApiMenuCategories() {
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://192.168.0.102/coffee/api/")
+                .baseUrl("http://10.0.2.2:8080/coffee/api/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
@@ -29,11 +29,11 @@ public class ApiMenuCategories {
 
     public List<MenuCategory> getAllMenuCategories() {
         Call<List<MenuCategory>> menuCategoriesCall = coffeeAPI.getAllMenuCategories();
-        //menuCategories.clear();   // Если убрать, то категории будут через раз появляться
 
         menuCategoriesCall.enqueue(new Callback<List<MenuCategory>>() {
             @Override
-            public void onResponse(Call<List<MenuCategory>> call, Response<List<MenuCategory>> response) {
+            public void onResponse(Call<List<MenuCategory>> call,
+                                   Response<List<MenuCategory>> response) {
                 if (!response.isSuccessful()) {
                     menuCategories.add(new MenuCategory(1, String.valueOf(response.code())));
 
@@ -45,7 +45,10 @@ public class ApiMenuCategories {
 
             @Override
             public void onFailure(Call<List<MenuCategory>> call, Throwable t) {
-                menuCategories.add(new MenuCategory(1, "Возникла ошибка"));
+                menuCategories.add(new MenuCategory(
+                        1,
+                        "Возникла ошибка " + t.getMessage()
+                ));
             }
         });
 

@@ -15,6 +15,7 @@ import com.example.coffeapp.adapter.MenuCategoryAdapter;
 import com.example.coffeapp.adapter.MenuElementAdapter;
 import com.example.coffeapp.api.ApiMenuCategories;
 import com.example.coffeapp.mocks.MockedDataInitializer;
+import com.example.coffeapp.model.Cart;
 import com.example.coffeapp.model.MenuCategory;
 import com.example.coffeapp.model.MenuElement;
 import com.example.coffeapp.api.CoffeeAPI;
@@ -50,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
         menuCategories = mockedData.getMockedMenuCategories();
 //        menuCategories = apiMenuCategories.getAllMenuCategories();
         setMenuCategoryRecycler(menuCategories);
-        setAllMenuElementsCategoryButton();
+//        setAllMenuElementsCategoryButton();
 
         menuElementsFull = mockedData.getMockedMenuElements();
         menuElementsToShow = new ArrayList<MenuElement>() {{
@@ -59,6 +60,8 @@ public class MainActivity extends AppCompatActivity {
         setMenuElementRecycler(menuElementsToShow);
 
         setCart();
+
+        Cart cart = ((MainApp) getApplication()).getCart();
     }
 
     private void setMenuCategoryRecycler(List<MenuCategory> menuCategories) {
@@ -84,29 +87,29 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /* Здесь */
-    public static void showMenuElementsByCategory(int category) {
-        menuElementsToShow.clear();
-
-        List<MenuElement> filterMenuElements = menuElementsFull
-                .stream()
-                .filter(el -> el.getCategory().getId() == category)
-                .collect(Collectors.toList());
-
-        menuElementsToShow.clear();
-        menuElementsToShow.addAll(filterMenuElements);
-
-        menuElementAdapter.notifyDataSetChanged();
-    }
-
-    private void setAllMenuElementsCategoryButton() {
-        TextView allMenuElementsShow = findViewById(R.id.all_menu_elements_label);
-        allMenuElementsShow.setOnClickListener(view -> {
-            menuElementsToShow.clear();
-            menuElementsToShow.addAll(menuElementsFull);
-
-            menuElementAdapter.notifyDataSetChanged();
-        });
-    }
+//    public static void showMenuElementsByCategory(int category) {
+//        menuElementsToShow.clear();
+//
+//        List<MenuElement> filterMenuElements = menuElementsFull
+//                .stream()
+//                .filter(el -> el.getCategory().getId() == category)
+//                .collect(Collectors.toList());
+//
+//        menuElementsToShow.clear();
+//        menuElementsToShow.addAll(filterMenuElements);
+//
+//        menuElementAdapter.notifyDataSetChanged();
+//    }
+//
+//    private void setAllMenuElementsCategoryButton() {
+//        TextView allMenuElementsShow = findViewById(R.id.all_menu_elements_label);
+//        allMenuElementsShow.setOnClickListener(view -> {
+//            menuElementsToShow.clear();
+//            menuElementsToShow.addAll(menuElementsFull);
+//
+//            menuElementAdapter.notifyDataSetChanged();
+//        });
+//    }
 
     private void setCart() {
         ImageView cartIcon = findViewById(R.id.cart_icon);
