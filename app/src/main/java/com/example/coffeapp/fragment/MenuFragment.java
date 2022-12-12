@@ -1,15 +1,19 @@
 package com.example.coffeapp.fragment;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -18,60 +22,99 @@ import com.example.coffeapp.MainApp;
 import com.example.coffeapp.R;
 import com.example.coffeapp.adapter.MenuCategoryAdapter;
 import com.example.coffeapp.adapter.MenuElementAdapter;
-import com.example.coffeapp.api.ApiMenuCategories;
-import com.example.coffeapp.api.ApiMenuElements;
-import com.example.coffeapp.api.CoffeeAPI;
-import com.example.coffeapp.mocks.MockedDataInitializer;
 import com.example.coffeapp.model.MenuCategory;
 import com.example.coffeapp.model.MenuElement;
+import com.example.coffeapp.viewmodel.MenuElementsViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
+public class MenuFragment extends Fragment implements MenuElementAdapter.ItemClickListener {
 
-public class MenuFragment extends Fragment {
+    private static final String TAG = "MenuFragment";
+
+    private static MenuFragment menuFragmentInstance;
 
     private static MenuCategoryAdapter menuCategoryAdapter;
     private static MenuElementAdapter menuElementAdapter;
+    private RecyclerView menuElementRecycler;
 
     private static List<MenuCategory> menuCategories = new ArrayList<>();
-    private static List<MenuElement> menuElementsFull;
+    private static List<MenuElement> menuElementsFull = new ArrayList<>();
     private static List<MenuElement> menuElementsToShow;
+
+    private MenuElementsViewModel menuElementsViewModel;
+
+    private ProgressBar progressBar;
+
+    public static MenuFragment newInstance() {
+        if (menuFragmentInstance == null) {
+            menuFragmentInstance = new MenuFragment();
+        }
+
+        return menuFragmentInstance;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        menuElementsViewModel =
+                new ViewModelProvider(this).get(MenuElementsViewModel.class);
+
+        menuElementsViewModel.getMenuElements().observe(getViewLifecycleOwner(), menuElements -> {
+            progressBar.setVisibility(View.GONE);
+            Toast.makeText(getContext(), "Данные получены", Toast.LENGTH_SHORT).show();
+            menuElementAdapter.setMenuElements(menuElements);
+        });
+    }
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_menu, container, false);
 
-//        MockedDataInitializer mockedData = new MockedDataInitializer();
+        setActionBar();
+
+        setProgressBar(view);
 
         menuCategories = ((MainApp) getActivity().getApplication()).getMenuCategories();
-        setMenuCategoryRecycler(menuCategories, view);
+        setMenuCategoryRecyclerView(menuCategories, view);
 
-        menuElementsFull = ((MainApp) getActivity().getApplication()).getMenuElements();
-        setMenuElementRecycler(menuElementsFull, view);
-
-//        ApiMenuElements apiMenuElements = new ApiMenuElements();
-
-//        menuElementsFull = mockedData.getMockedMenuElements();
-
-//        menuElementsFull = apiMenuElements.getAllMenuElements();
-//        System.out.println("Элементы меню: " + menuElementsFull.toString());
-//        menuElementsToShow = new ArrayList<MenuElement>() {{
-//            addAll(menuElementsFull);
-//        }};
-//        setMenuElementRecycler(menuElementsToShow, view);
+        setMenuElementRecyclerView(menuElementsFull, view);
 
         return view;
     }
 
-    private void setMenuCategoryRecycler(List<MenuCategory> menuCategories, View view) {
+    private void setActionBar() {
+        ActionBar supportActionBar = ((BaseActivity) getActivity()).getSupportActionBar();
+        supportActionBar.setHomeButtonEnabled(true);
+        supportActionBar.setDisplayHomeAsUpEnabled(true);
+    }
+
+    private void setProgressBar(View view) {
+        progressBar = view.findViewById(R.id.progress_bar);
+        progressBar.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onItemClick(MenuElement menuElement) {
+        MenuElementFragment menuElementFragment = MenuElementFragment.newInstance(menuElement);
+
+        FragmentTransaction fragmentTransaction = getActivity()
+                .getSupportFragmentManager()
+                .beginTransaction();
+
+        fragmentTransaction.replace(R.id.fragment_container, menuElementFragment);
+//        fragmentTransaction.hide(getActivity().getSupportFragmentManager().findFragmentByTag("selected_fragment"));
+//        fragmentTransaction.add(R.id.fragment_container, menuElementFragment);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
+    }
+
+    private void setMenuCategoryRecyclerView(List<MenuCategory> menuCategories, View view) {
         RecyclerView.LayoutManager layoutManager =
                 new LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL, false);
 
@@ -82,13 +125,13 @@ public class MenuFragment extends Fragment {
         menuCategoryRecycler.setAdapter(menuCategoryAdapter);
     }
 
-    private void setMenuElementRecycler(List<MenuElement> menuElements, View view) {
+    private void setMenuElementRecyclerView(List<MenuElement> menuElements, View view) {
         RecyclerView.LayoutManager layoutManager =
                 new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
 
-        menuElementAdapter = new MenuElementAdapter(getContext(), menuElements);
+        menuElementAdapter = new MenuElementAdapter(getContext(), menuElements, this);
 
-        RecyclerView menuElementRecycler = view.findViewById(R.id.menu_element_recycler);
+        menuElementRecycler = view.findViewById(R.id.menu_element_recycler);
         menuElementRecycler.setLayoutManager(layoutManager);
         menuElementRecycler.setAdapter(menuElementAdapter);
     }

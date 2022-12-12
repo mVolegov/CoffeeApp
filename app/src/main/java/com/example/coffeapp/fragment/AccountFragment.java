@@ -13,6 +13,16 @@ import com.example.coffeapp.R;
 
 public class AccountFragment extends Fragment {
 
+    private static AccountFragment accountFragmentInstance;
+
+    public static AccountFragment getInstance() {
+        if (accountFragmentInstance == null) {
+            accountFragmentInstance = new AccountFragment();
+        }
+
+        return accountFragmentInstance;
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {

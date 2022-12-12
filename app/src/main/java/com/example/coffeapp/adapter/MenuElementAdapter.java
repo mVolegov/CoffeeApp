@@ -1,5 +1,6 @@
 package com.example.coffeapp.adapter;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.Context;
@@ -8,6 +9,7 @@ import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -24,10 +26,14 @@ public class MenuElementAdapter
 
     private Context context;
     private List<MenuElement> menuElements;
+    private ItemClickListener itemClickListener;
 
-    public MenuElementAdapter(Context context, List<MenuElement> menuElements) {
+    public MenuElementAdapter(Context context,
+                              List<MenuElement> menuElements,
+                              ItemClickListener clickListener) {
         this.context = context;
         this.menuElements = menuElements;
+        this.itemClickListener = clickListener;
     }
 
     @NonNull
@@ -42,32 +48,38 @@ public class MenuElementAdapter
 
     @Override
     public void onBindViewHolder(@NonNull MenuElementViewHolder holder, int position) {
-        holder.menuElementTitle.setText(menuElements.get(position).getName());
-        holder.menuElementPrice.setText(
-                String.format("%.2f .руб", menuElements.get(position).getPrice().doubleValue())
-        );
-//        holder.menuElementPrice.setText(menuElements.get(position).getPrice().toString());
+        holder.bind(menuElements.get(position));
 
-        holder.itemView.setOnClickListener(view -> {
-            Intent intent = new Intent(context, MenuElementActivity.class);
+        holder.itemView.setOnClickListener(view ->
+                itemClickListener.onItemClick(menuElements.get(position)));
 
-            ActivityOptions options = ActivityOptions
-                    .makeSceneTransitionAnimation(
-                            (Activity) context,
-                            new Pair<>(holder.menuElementCard, "menuElement")
-                    );
+//        holder.itemView.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//
+//            }
+//        });
 
-            intent.putExtra("menuElementName",
-                    menuElements.get(position).getName());
-            intent.putExtra("menuElementPrice",
-                    menuElements.get(position).getPrice().toString());
-            intent.putExtra("menuElementDescription",
-                    menuElements.get(position).getDescription());
-            intent.putExtra("menuElementId",
-                    menuElements.get(position).getId());
-
-            context.startActivity(intent, options.toBundle());
-        });
+//        holder.itemView.setOnClickListener(view -> {
+//            Intent intent = new Intent(context, MenuElementActivity.class);
+//
+//            ActivityOptions options = ActivityOptions
+//                    .makeSceneTransitionAnimation(
+//                            (Activity) context,
+//                            new Pair<>(holder.menuElementCard, "menuElement")
+//                    );
+//
+//            intent.putExtra("menuElementName",
+//                    menuElements.get(position).getName());
+//            intent.putExtra("menuElementPrice",
+//                    menuElements.get(position).getPrice().toString());
+//            intent.putExtra("menuElementDescription",
+//                    menuElements.get(position).getDescription());
+//            intent.putExtra("menuElementId",
+//                    menuElements.get(position).getId());
+//
+//            context.startActivity(intent, options.toBundle());
+//        });
     }
 
     @Override
@@ -75,7 +87,12 @@ public class MenuElementAdapter
         return menuElements.size();
     }
 
-    static final class MenuElementViewHolder extends RecyclerView.ViewHolder {
+    public void setMenuElements(List<MenuElement> menuElements) {
+        this.menuElements = menuElements;
+        notifyDataSetChanged();
+    }
+
+    final class MenuElementViewHolder extends RecyclerView.ViewHolder {
 
         private TextView menuElementTitle;
         private TextView menuElementPrice;
@@ -88,5 +105,14 @@ public class MenuElementAdapter
             menuElementPrice = itemView.findViewById(R.id.menu_element_price_label);
             menuElementCard = itemView.findViewById(R.id.menu_element_card_view);
         }
+
+        public void bind(final MenuElement data) {
+            menuElementTitle.setText(data.getName());
+            menuElementPrice.setText(String.format("%.2f .руб", data.getPrice().doubleValue()));
+        }
+    }
+
+    public interface ItemClickListener {
+        void onItemClick(MenuElement menuElement);
     }
 }

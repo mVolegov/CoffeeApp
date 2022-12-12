@@ -1,6 +1,7 @@
 package com.example.coffeapp.api;
 
 import com.example.coffeapp.model.MenuCategory;
+import com.example.coffeapp.network.CoffeeAPI;
 
 import java.util.ArrayList;
 import java.util.List;

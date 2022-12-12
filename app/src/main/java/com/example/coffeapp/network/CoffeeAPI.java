@@ -1,4 +1,4 @@
-package com.example.coffeapp.api;
+package com.example.coffeapp.network;
 
 import com.example.coffeapp.model.MenuCategory;
 import com.example.coffeapp.model.MenuElement;

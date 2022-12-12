@@ -7,6 +7,15 @@ public class Cart {
 
     private Map<MenuElement, Integer> menuElementHasAmountMap = new HashMap<>();
 
+    public void addMenuElementToCart(MenuElement menuElementToAdd) {
+        if (menuElementHasAmountMap.containsKey(menuElementToAdd)) {
+            Integer amount = menuElementHasAmountMap.get(menuElementToAdd);
+            menuElementHasAmountMap.put(menuElementToAdd, ++amount);
+        } else {
+            menuElementHasAmountMap.put(menuElementToAdd, 1);
+        }
+    }
+
     public Map<MenuElement, Integer> getMenuElementHasAmountMap() {
         return menuElementHasAmountMap;
     }
