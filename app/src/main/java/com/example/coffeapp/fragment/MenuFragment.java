@@ -48,9 +48,7 @@ public class MenuFragment extends Fragment implements MenuElementAdapter.ItemCli
     private ProgressBar progressBar;
 
     public static MenuFragment newInstance() {
-        if (menuFragmentInstance == null) {
-            menuFragmentInstance = new MenuFragment();
-        }
+        if (menuFragmentInstance == null) menuFragmentInstance = new MenuFragment();
 
         return menuFragmentInstance;
     }
@@ -77,7 +75,6 @@ public class MenuFragment extends Fragment implements MenuElementAdapter.ItemCli
         View view = inflater.inflate(R.layout.fragment_menu, container, false);
 
         setActionBar();
-
         setProgressBar(view);
 
         menuCategories = ((MainApp) getActivity().getApplication()).getMenuCategories();
@@ -86,17 +83,6 @@ public class MenuFragment extends Fragment implements MenuElementAdapter.ItemCli
         setMenuElementRecyclerView(menuElementsFull, view);
 
         return view;
-    }
-
-    private void setActionBar() {
-        ActionBar supportActionBar = ((BaseActivity) getActivity()).getSupportActionBar();
-        supportActionBar.setHomeButtonEnabled(true);
-        supportActionBar.setDisplayHomeAsUpEnabled(true);
-    }
-
-    private void setProgressBar(View view) {
-        progressBar = view.findViewById(R.id.progress_bar);
-        progressBar.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -134,6 +120,17 @@ public class MenuFragment extends Fragment implements MenuElementAdapter.ItemCli
         menuElementRecycler = view.findViewById(R.id.menu_element_recycler);
         menuElementRecycler.setLayoutManager(layoutManager);
         menuElementRecycler.setAdapter(menuElementAdapter);
+    }
+
+    private void setProgressBar(View view) {
+        progressBar = view.findViewById(R.id.progress_bar);
+        progressBar.setVisibility(View.VISIBLE);
+    }
+
+    private void setActionBar() {
+        ActionBar supportActionBar = ((BaseActivity) getActivity()).getSupportActionBar();
+        supportActionBar.setHomeButtonEnabled(true);
+        supportActionBar.setDisplayHomeAsUpEnabled(true);
     }
 
     //    public static void showMenuElementsByCategory(int category) {

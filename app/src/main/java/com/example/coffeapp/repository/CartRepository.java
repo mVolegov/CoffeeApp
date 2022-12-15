@@ -1,37 +1,49 @@
 package com.example.coffeapp.repository;
 
+import android.app.Application;
+
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 
-import com.example.coffeapp.model.CartItem;
-import com.example.coffeapp.model.MenuElement;
+import com.example.coffeapp.database.Cart;
+import com.example.coffeapp.database.CartDAO;
+import com.example.coffeapp.database.CartDatabase;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 public class CartRepository {
 
-    private MutableLiveData<List<CartItem>> mutableCart = new MutableLiveData<>();
+    private CartDAO cartDAO;
+    private LiveData<List<Cart>> allCartItemsLiveData;
+    private Executor executor = Executors.newSingleThreadExecutor();
 
-    public LiveData<List<CartItem>> getCart() {
-        if (mutableCart.getValue() == null) initCart();
-
-        return mutableCart;
+    public CartRepository(Application application) {
+        cartDAO = CartDatabase.getInstance(application).cartDAO();
+        allCartItemsLiveData = cartDAO.getAllCartItems();
     }
 
-    public void initCart() {
-        mutableCart.setValue(new ArrayList<>());
+    public LiveData<List<Cart>> getAllCartItemsLiveData() {
+        return allCartItemsLiveData;
     }
 
-    public boolean addMenuElementToCart(MenuElement menuElementToAdd) {
-        if (mutableCart.getValue() == null) initCart();
+    public void insertCartItem(Cart cart) {
+        executor.execute(() -> cartDAO.insertCartItem(cart));
+    }
 
-        List<CartItem> cartItems = new ArrayList<>(mutableCart.getValue());
-        CartItem cartItemToAdd = new CartItem(menuElementToAdd, 1);
-        cartItems.add(cartItemToAdd);
+    public void deleteCartItem(Cart cart) {
+        executor.execute(() -> cartDAO.deleteCartItem(cart));
+    }
 
-        mutableCart.setValue(cartItems);
+    public void updateCartItemQuantity(int id, int quantity) {
+        executor.execute(() -> cartDAO.updateQuantity(id, quantity));
+    }
 
-        return true;
+    public void updateCartItemPrice(int id, Double price) {
+        executor.execute(() -> cartDAO.updatePrice(id, price));
+    }
+
+    public void deleteAllCartItems() {
+        executor.execute(() -> cartDAO.deleteAllItems());
     }
 }

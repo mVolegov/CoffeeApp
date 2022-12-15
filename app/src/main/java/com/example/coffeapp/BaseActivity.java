@@ -59,14 +59,6 @@ public class BaseActivity extends AppCompatActivity {
 
             return true;
         });
-
-        CartViewModel cartViewModel = new ViewModelProvider(this).get(CartViewModel.class);
-        cartViewModel.getCart().observe(this, new Observer<List<CartItem>>() {
-            @Override
-            public void onChanged(List<CartItem> cartItems) {
-                Log.d(TAG, "onChanged: " + cartItems.size());
-            }
-        });
     }
 
     @Override
