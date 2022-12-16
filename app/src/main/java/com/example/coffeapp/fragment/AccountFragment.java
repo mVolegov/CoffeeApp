@@ -13,8 +13,6 @@ import com.example.coffeapp.R;
 
 public class AccountFragment extends Fragment {
 
-    private static AccountFragment instance;
-
     public static AccountFragment newInstance() {
         return new AccountFragment();
     }

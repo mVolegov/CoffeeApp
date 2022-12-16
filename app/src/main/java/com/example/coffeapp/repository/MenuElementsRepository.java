@@ -31,11 +31,11 @@ public class MenuElementsRepository {
         makeApiCall();
     }
 
-    public MutableLiveData<List<MenuElement>> getMenuElementsObserver() {
+    public MutableLiveData<List<MenuElement>> getMenuElements() {
         return menuElements;
     }
 
-    public void makeApiCall() {
+    private void makeApiCall() {
         CoffeeAPI coffeeAPI = RetrofitInstance.getRetrofitClient().create(CoffeeAPI.class);
 
         Call<List<MenuElement>> call = coffeeAPI.getAllMenuElements();

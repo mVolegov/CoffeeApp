@@ -2,6 +2,8 @@ package com.example.coffeapp.model;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.Objects;
+
 public class MenuCategory {
 
     private int id;
@@ -14,6 +16,21 @@ public class MenuCategory {
     public MenuCategory(int id, String title) {
         this.id = id;
         this.title = title;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        MenuCategory that = (MenuCategory) o;
+
+        return id == that.id && Objects.equals(title, that.title);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, title);
     }
 
     public int getId() {

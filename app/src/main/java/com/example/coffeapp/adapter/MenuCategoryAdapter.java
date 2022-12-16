@@ -1,6 +1,5 @@
 package com.example.coffeapp.adapter;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,7 +8,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.coffeapp.MainActivity;
 import com.example.coffeapp.R;
 import com.example.coffeapp.model.MenuCategory;
 
@@ -18,19 +16,20 @@ import java.util.List;
 public class MenuCategoryAdapter
         extends RecyclerView.Adapter<MenuCategoryAdapter.MenuCategoryViewHolder> {
 
-    private final Context context;
-    private final List<MenuCategory> menuCategories;
+    private List<MenuCategory> menuCategories;
+    private ItemClickListener itemClickListener;
 
-    public MenuCategoryAdapter(Context context, List<MenuCategory> menuCategories) {
-        this.context = context;
+    public MenuCategoryAdapter(List<MenuCategory> menuCategories,
+                               ItemClickListener itemClickListener) {
         this.menuCategories = menuCategories;
+        this.itemClickListener = itemClickListener;
     }
 
     @NonNull
     @Override
     public MenuCategoryViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View menuCategoryItems = LayoutInflater
-                .from(context)
+                .from(parent.getContext())
                 .inflate(R.layout.menu_category_item, parent, false);
 
         return new MenuCategoryViewHolder(menuCategoryItems);
@@ -40,13 +39,19 @@ public class MenuCategoryAdapter
     public void onBindViewHolder(@NonNull MenuCategoryViewHolder holder, int position) {
         holder.menuCategoryLabel.setText(menuCategories.get(position).getTitle());
 
-//        holder.itemView.setOnClickListener(view ->
-//                MainActivity.showMenuElementsByCategory(menuCategories.get(position).getId()));
+        holder.itemView.setOnClickListener(view ->
+                itemClickListener.onMenuCategoryClick(menuCategories.get(position)));
     }
 
     @Override
     public int getItemCount() {
         return menuCategories.size();
+    }
+
+    public void setMenuCategories(List<MenuCategory> menuCategories) {
+        this.menuCategories = menuCategories;
+
+        notifyDataSetChanged();
     }
 
     static final class MenuCategoryViewHolder extends RecyclerView.ViewHolder {
@@ -58,5 +63,9 @@ public class MenuCategoryAdapter
 
             menuCategoryLabel = itemView.findViewById(R.id.menu_category_label);
         }
+    }
+
+    public interface ItemClickListener {
+        void onMenuCategoryClick(MenuCategory menuCategory);
     }
 }

@@ -17,6 +17,6 @@ public class MenuElementsViewModel extends ViewModel {
     }
 
     public LiveData<List<MenuElement>> getMenuElements() {
-        return menuElementsRepository.getMenuElementsObserver();
+        return menuElementsRepository.getMenuElements();
     }
 }

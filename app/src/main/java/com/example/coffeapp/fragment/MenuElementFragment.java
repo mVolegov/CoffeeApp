@@ -30,9 +30,6 @@ public class MenuElementFragment extends Fragment {
 
     private static final String TAG = "MenuElementFragment";
 
-    private MenuElement menuElement;
-    private List<Cart> cartList;
-
     private CartViewModel cartViewModel;
 
     private TextView menuElementNameLabel;
@@ -40,6 +37,9 @@ public class MenuElementFragment extends Fragment {
     private TextView menuElementPriceText;
     private Button addToCartButton;
     private ConstraintLayout constraintLayout;
+
+    private MenuElement menuElement;
+    private List<Cart> cartList;
 
     public static MenuElementFragment newInstance(MenuElement menuElement) {
         return new MenuElementFragment(menuElement);
@@ -51,18 +51,6 @@ public class MenuElementFragment extends Fragment {
         this.menuElement = menuElement;
     }
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        cartList = new ArrayList<>();
-
-        cartViewModel = new ViewModelProvider(this).get(CartViewModel.class);
-        cartViewModel.getAllCartItems().observe(getViewLifecycleOwner(), carts -> {
-            cartList.addAll(carts);
-        });
-    }
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -70,10 +58,25 @@ public class MenuElementFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_menu_element, container, false);
 
-        ActionBar supportActionBar = ((BaseActivity) getActivity()).getSupportActionBar();
-        supportActionBar.setHomeButtonEnabled(true);
-        supportActionBar.setDisplayHomeAsUpEnabled(true);
+        setActionBar();
+        setViews(view);
 
+        return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        cartList = new ArrayList<>();
+
+        cartViewModel = new ViewModelProvider(this).get(CartViewModel.class);
+        cartViewModel
+                .getAllCartItems()
+                .observe(getViewLifecycleOwner(), carts -> cartList.addAll(carts));
+    }
+
+    private void setViews(View view) {
         menuElementNameLabel = view.findViewById(R.id.menu_element_page_name_label);
         menuElementDescriptionText = view.findViewById(R.id.menu_element_page_description_label);
         menuElementPriceText = view.findViewById(R.id.menu_element_page_price_label);
@@ -87,8 +90,6 @@ public class MenuElementFragment extends Fragment {
 
         addToCartButton = view.findViewById(R.id.add_to_cart_button);
         addToCartButton.setOnClickListener(view1 -> insertToRoom());
-
-        return view;
     }
 
     private void insertToRoom() {
@@ -96,26 +97,28 @@ public class MenuElementFragment extends Fragment {
         cart.setMenuElementName(menuElement.getName());
         cart.setMenuElementPrice(menuElement.getPrice().doubleValue());
 
-        final int[] quantity = {1};
-        final int[] id = new int[1];
+        int amount = 1;
+        int id = 0;
 
         if (!cartList.isEmpty()) {
-            for (int i = 0; i < cartList.size(); i++) {
-                if (cart.getMenuElementName().equals(cartList.get(i).getMenuElementName())) {
-                    quantity[0] = cartList.get(i).getAmount();
-                    quantity[0]++;
-                    id[0] = cartList.get(i).getId();
+
+
+            for (Cart eachCart : cartList) {
+                if (cart.getMenuElementName().equals(eachCart.getMenuElementName())) {
+                    amount = eachCart.getAmount();
+                    amount++;
+                    id = eachCart.getId();
                 }
             }
         }
 
-        if (quantity[0] == 1) {
-            cart.setAmount(quantity[0]);
-            cart.setTotalMenuElementPrice(quantity[0] * cart.getMenuElementPrice());
+        if (amount == 1) {
+            cart.setAmount(amount);
+            cart.setTotalMenuElementPrice(amount * cart.getMenuElementPrice());
             cartViewModel.insertCartItem(cart);
         } else {
-            cartViewModel.updateCartItemQuantity(id[0], quantity[0]);
-            cartViewModel.updateCartItemPrice(id[0], quantity[0] * cart.getMenuElementPrice());
+            cartViewModel.updateCartItemQuantity(id, amount);
+            cartViewModel.updateCartItemPrice(id, amount * cart.getMenuElementPrice());
         }
 
         makeSnackBar("Добавлено в корзину");
@@ -139,5 +142,11 @@ public class MenuElementFragment extends Fragment {
                 .setActionTextColor(getResources().getColor(R.color.green_default))
                 .setBackgroundTint(getResources().getColor(R.color.grey_default))
                 .show();
+    }
+
+    private void setActionBar() {
+        ActionBar supportActionBar = ((BaseActivity) getActivity()).getSupportActionBar();
+        supportActionBar.setHomeButtonEnabled(true);
+        supportActionBar.setDisplayHomeAsUpEnabled(true);
     }
 }

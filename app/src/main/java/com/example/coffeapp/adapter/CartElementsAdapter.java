@@ -14,7 +14,8 @@ import com.example.coffeapp.database.Cart;
 
 import java.util.List;
 
-public class CartElementsAdapter extends RecyclerView.Adapter<CartElementsAdapter.CartViewHolder> {
+public class CartElementsAdapter
+        extends RecyclerView.Adapter<CartElementsAdapter.CartViewHolder> {
 
     private final CartClickedListener cartClickedListener;
     private List<Cart> cartList;
@@ -84,7 +85,7 @@ public class CartElementsAdapter extends RecyclerView.Adapter<CartElementsAdapte
         public void bind(Cart cart) {
             menuElementName.setText(cart.getMenuElementName());
             menuElementAmount.setText(String.valueOf(cart.getAmount()));
-            menuElementPrice.setText(String.valueOf(cart.getMenuElementPrice() + " руб"));
+            menuElementPrice.setText(cart.getMenuElementPrice() + " руб");
         }
     }
 

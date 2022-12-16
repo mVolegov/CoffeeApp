@@ -1,15 +1,8 @@
 package com.example.coffeapp.adapter;
 
-import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.app.ActivityOptions;
-import android.content.Context;
-import android.content.Intent;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -17,21 +10,17 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.coffeapp.R;
 import com.example.coffeapp.model.MenuElement;
-import com.example.coffeapp.MenuElementActivity;
 
 import java.util.List;
 
 public class MenuElementAdapter
         extends RecyclerView.Adapter<MenuElementAdapter.MenuElementViewHolder> {
 
-    private Context context;
     private List<MenuElement> menuElements;
     private ItemClickListener itemClickListener;
 
-    public MenuElementAdapter(Context context,
-                              List<MenuElement> menuElements,
+    public MenuElementAdapter(List<MenuElement> menuElements,
                               ItemClickListener clickListener) {
-        this.context = context;
         this.menuElements = menuElements;
         this.itemClickListener = clickListener;
     }
@@ -40,7 +29,7 @@ public class MenuElementAdapter
     @Override
     public MenuElementViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View menuElements = LayoutInflater
-                .from(context)
+                .from(parent.getContext())
                 .inflate(R.layout.menu_element, parent,false);
 
         return new MenuElementAdapter.MenuElementViewHolder(menuElements);
@@ -51,35 +40,7 @@ public class MenuElementAdapter
         holder.bind(menuElements.get(position));
 
         holder.itemView.setOnClickListener(view ->
-                itemClickListener.onItemClick(menuElements.get(position)));
-
-//        holder.itemView.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//
-//            }
-//        });
-
-//        holder.itemView.setOnClickListener(view -> {
-//            Intent intent = new Intent(context, MenuElementActivity.class);
-//
-//            ActivityOptions options = ActivityOptions
-//                    .makeSceneTransitionAnimation(
-//                            (Activity) context,
-//                            new Pair<>(holder.menuElementCard, "menuElement")
-//                    );
-//
-//            intent.putExtra("menuElementName",
-//                    menuElements.get(position).getName());
-//            intent.putExtra("menuElementPrice",
-//                    menuElements.get(position).getPrice().toString());
-//            intent.putExtra("menuElementDescription",
-//                    menuElements.get(position).getDescription());
-//            intent.putExtra("menuElementId",
-//                    menuElements.get(position).getId());
-//
-//            context.startActivity(intent, options.toBundle());
-//        });
+                itemClickListener.onMenuElementClick(menuElements.get(position)));
     }
 
     @Override
@@ -113,6 +74,6 @@ public class MenuElementAdapter
     }
 
     public interface ItemClickListener {
-        void onItemClick(MenuElement menuElement);
+        void onMenuElementClick(MenuElement menuElement);
     }
 }

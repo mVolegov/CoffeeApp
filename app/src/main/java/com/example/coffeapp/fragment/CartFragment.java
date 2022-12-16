@@ -24,7 +24,6 @@ import java.math.BigDecimal;
 public class CartFragment extends Fragment implements CartElementsAdapter.CartClickedListener {
 
     private static final String TAG = "CartFragment";
-    private static CartFragment instance;
 
     private CartViewModel cartViewModel;
 
@@ -38,32 +37,6 @@ public class CartFragment extends Fragment implements CartElementsAdapter.CartCl
 
     public CartFragment() {}
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        cartViewModel = new ViewModelProvider(this).get(CartViewModel.class);
-        cartViewModel.getAllCartItems().observe(getViewLifecycleOwner(), carts -> {
-            double price = 0;
-
-            cartElementsAdapter.setMenuElementsCartList(carts);
-
-            if (carts.isEmpty()) {
-                totalCartPriceTextView.setText("Пусто");
-            } else {
-                for (int i = 0; i < carts.size(); i++) {
-                    price += carts.get(i).getTotalMenuElementPrice();
-                }
-
-                totalCartPriceTextView.setText(
-                        "Всего: "
-                                + new BigDecimal(price).setScale(2, BigDecimal.ROUND_HALF_UP)
-                                + " руб"
-                );
-            }
-        });
-    }
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -71,18 +44,49 @@ public class CartFragment extends Fragment implements CartElementsAdapter.CartCl
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_cart, container, false);
 
-        totalCartPriceTextView = view.findViewById(R.id.orderTotalTextView);
+        setViews(view);
         setCartElementsRecyclerView(view);
 
         return view;
     }
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        cartViewModel = new ViewModelProvider(this).get(CartViewModel.class);
+        cartViewModel
+                .getAllCartItems()
+                .observe(getViewLifecycleOwner(), carts -> {
+                    cartElementsAdapter.setMenuElementsCartList(carts);
+
+                    if (carts.isEmpty()) {
+                        totalCartPriceTextView.setText("Пусто");
+                    } else {
+                        double price = carts.stream().mapToDouble(Cart::getTotalMenuElementPrice).sum();
+
+                        totalCartPriceTextView.setText(
+                            "Всего: "
+                            + new BigDecimal(price).setScale(2, BigDecimal.ROUND_HALF_UP)
+                            + " руб"
+                        );
+                    }
+                });
+    }
+
+    private void setViews(View view) {
+        totalCartPriceTextView = view.findViewById(R.id.orderTotalTextView);
+    }
+
     private void setCartElementsRecyclerView(View view) {
         RecyclerView.LayoutManager layoutManager =
                 new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
+
         DividerItemDecoration dividerItemDecoration =
                 new DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL);
+
         cartElementsAdapter = new CartElementsAdapter(this);
+
         cartElementsRecyclerView = view.findViewById(R.id.cart_recycler_view);
         cartElementsRecyclerView.setLayoutManager(layoutManager);
         cartElementsRecyclerView.setAdapter(cartElementsAdapter);
@@ -98,8 +102,9 @@ public class CartFragment extends Fragment implements CartElementsAdapter.CartCl
     public void onPlusClicked(Cart cart) {
         int quantity = cart.getAmount() + 1;
         cartViewModel.updateCartItemQuantity(cart.getId(), quantity);
-        cartViewModel.updateCartItemPrice(cart.getId(),
-                quantity * cart.getMenuElementPrice());
+        cartViewModel.updateCartItemPrice(
+                cart.getId(), quantity * cart.getMenuElementPrice()
+        );
         cartElementsAdapter.notifyDataSetChanged();
     }
 
@@ -109,8 +114,9 @@ public class CartFragment extends Fragment implements CartElementsAdapter.CartCl
 
         if (quantity != 0) {
             cartViewModel.updateCartItemQuantity(cart.getId(), quantity);
-            cartViewModel.updateCartItemPrice(cart.getId(),
-                    quantity * cart.getMenuElementPrice());
+            cartViewModel.updateCartItemPrice(
+                    cart.getId(), quantity * cart.getMenuElementPrice()
+            );
             cartElementsAdapter.notifyDataSetChanged();
         } else {
             cartViewModel.deleteCartItem(cart);
