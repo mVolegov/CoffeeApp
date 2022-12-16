@@ -1,7 +1,6 @@
 package com.example.coffeapp.fragment;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,7 +32,7 @@ public class MenuFragment extends Fragment implements MenuElementAdapter.ItemCli
 
     private static final String TAG = "MenuFragment";
 
-    private static MenuFragment menuFragmentInstance;
+    private static MenuFragment instance;
 
     private static MenuCategoryAdapter menuCategoryAdapter;
     private static MenuElementAdapter menuElementAdapter;
@@ -48,9 +47,7 @@ public class MenuFragment extends Fragment implements MenuElementAdapter.ItemCli
     private ProgressBar progressBar;
 
     public static MenuFragment newInstance() {
-        if (menuFragmentInstance == null) menuFragmentInstance = new MenuFragment();
-
-        return menuFragmentInstance;
+        return new MenuFragment();
     }
 
     public MenuFragment() {}

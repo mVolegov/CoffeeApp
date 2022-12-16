@@ -13,21 +13,21 @@ import com.example.coffeapp.R;
 
 public class AccountFragment extends Fragment {
 
-    private static AccountFragment accountFragmentInstance;
+    private static AccountFragment instance;
 
-    public static AccountFragment getInstance() {
-        if (accountFragmentInstance == null) {
-            accountFragmentInstance = new AccountFragment();
-        }
-
-        return accountFragmentInstance;
+    public static AccountFragment newInstance() {
+        return new AccountFragment();
     }
 
     public AccountFragment() {}
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_account, container, false);
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_account, container, false);
+
+        return view;
     }
 }

@@ -20,12 +20,11 @@ import com.example.coffeapp.database.Cart;
 import com.example.coffeapp.viewmodel.CartViewModel;
 
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
 
 public class CartFragment extends Fragment implements CartElementsAdapter.CartClickedListener {
 
     private static final String TAG = "CartFragment";
-    private static CartFragment cartFragmentInstance;
+    private static CartFragment instance;
 
     private CartViewModel cartViewModel;
 
@@ -33,10 +32,8 @@ public class CartFragment extends Fragment implements CartElementsAdapter.CartCl
     private RecyclerView cartElementsRecyclerView;
     private TextView totalCartPriceTextView;
 
-    public static CartFragment getInstance() {
-        if (cartFragmentInstance ==  null) cartFragmentInstance = new CartFragment();
-
-        return cartFragmentInstance;
+    public static CartFragment newInstance() {
+        return new CartFragment();
     }
 
     public CartFragment() {}

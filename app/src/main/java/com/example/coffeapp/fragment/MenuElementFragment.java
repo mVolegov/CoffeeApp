@@ -30,8 +30,6 @@ public class MenuElementFragment extends Fragment {
 
     private static final String TAG = "MenuElementFragment";
 
-    private static MenuElementFragment menuElementFragment;
-
     private MenuElement menuElement;
     private List<Cart> cartList;
 
@@ -88,12 +86,7 @@ public class MenuElementFragment extends Fragment {
         );
 
         addToCartButton = view.findViewById(R.id.add_to_cart_button);
-        addToCartButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                insertToRoom();
-            }
-        });
+        addToCartButton.setOnClickListener(view1 -> insertToRoom());
 
         return view;
     }
@@ -129,7 +122,7 @@ public class MenuElementFragment extends Fragment {
     }
 
     private void makeSnackBar(String message) {
-        CartFragment cartFragment = CartFragment.getInstance();
+        CartFragment cartFragment = CartFragment.newInstance();
 
         Snackbar
                 .make(constraintLayout, message, BaseTransientBottomBar.LENGTH_SHORT)
