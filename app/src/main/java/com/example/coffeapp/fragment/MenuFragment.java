@@ -53,9 +53,11 @@ public class MenuFragment extends Fragment implements MenuElementAdapter.ItemCli
         return menuFragmentInstance;
     }
 
+    public MenuFragment() {}
+
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         menuElementsViewModel =
                 new ViewModelProvider(this).get(MenuElementsViewModel.class);
@@ -94,8 +96,6 @@ public class MenuFragment extends Fragment implements MenuElementAdapter.ItemCli
                 .beginTransaction();
 
         fragmentTransaction.replace(R.id.fragment_container, menuElementFragment);
-//        fragmentTransaction.hide(getActivity().getSupportFragmentManager().findFragmentByTag("selected_fragment"));
-//        fragmentTransaction.add(R.id.fragment_container, menuElementFragment);
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }
@@ -132,18 +132,4 @@ public class MenuFragment extends Fragment implements MenuElementAdapter.ItemCli
         supportActionBar.setHomeButtonEnabled(true);
         supportActionBar.setDisplayHomeAsUpEnabled(true);
     }
-
-    //    public static void showMenuElementsByCategory(int category) {
-    //        menuElementsToShow.clear();
-    //
-    //        List<MenuElement> filterMenuElements = menuElementsFull
-    //                .stream()
-    //                .filter(el -> el.getCategory().getId() == category)
-    //                .collect(Collectors.toList());
-    //
-    //        menuElementsToShow.clear();
-    //        menuElementsToShow.addAll(filterMenuElements);
-    //
-    //        menuElementAdapter.notifyDataSetChanged();
-    //    }
 }

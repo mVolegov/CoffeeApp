@@ -54,8 +54,8 @@ public class MenuElementFragment extends Fragment {
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         cartList = new ArrayList<>();
 
@@ -133,19 +133,15 @@ public class MenuElementFragment extends Fragment {
 
         Snackbar
                 .make(constraintLayout, message, BaseTransientBottomBar.LENGTH_SHORT)
-                .setAction("Коризна", new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        FragmentTransaction fragmentTransaction = getActivity()
-                                .getSupportFragmentManager()
-                                .beginTransaction();
+                .setAction("Коризна", view -> {
+                    FragmentTransaction fragmentTransaction = getActivity()
+                            .getSupportFragmentManager()
+                            .beginTransaction();
 
-                        fragmentTransaction.replace(R.id.fragment_container, cartFragment);
-                        fragmentTransaction.addToBackStack(null);
-                        fragmentTransaction.commit();
-                    }
+                    fragmentTransaction.replace(R.id.fragment_container, cartFragment);
+                    fragmentTransaction.addToBackStack(null);
+                    fragmentTransaction.commit();
                 })
-//                .setBackgroundTint(0XFF999999)
                 .setTextColor(getResources().getColor(R.color.white))
                 .setActionTextColor(getResources().getColor(R.color.green_default))
                 .setBackgroundTint(getResources().getColor(R.color.grey_default))

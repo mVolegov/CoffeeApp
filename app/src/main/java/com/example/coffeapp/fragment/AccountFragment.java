@@ -23,6 +23,8 @@ public class AccountFragment extends Fragment {
         return accountFragmentInstance;
     }
 
+    public AccountFragment() {}
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {

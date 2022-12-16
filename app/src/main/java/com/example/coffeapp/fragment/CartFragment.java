@@ -39,9 +39,11 @@ public class CartFragment extends Fragment implements CartElementsAdapter.CartCl
         return cartFragmentInstance;
     }
 
+    public CartFragment() {}
+
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         cartViewModel = new ViewModelProvider(this).get(CartViewModel.class);
         cartViewModel.getAllCartItems().observe(getViewLifecycleOwner(), carts -> {
@@ -58,8 +60,8 @@ public class CartFragment extends Fragment implements CartElementsAdapter.CartCl
 
                 totalCartPriceTextView.setText(
                         "Всего: "
-                        + new BigDecimal(price).setScale(2, BigDecimal.ROUND_HALF_UP)
-                        + " руб"
+                                + new BigDecimal(price).setScale(2, BigDecimal.ROUND_HALF_UP)
+                                + " руб"
                 );
             }
         });
