@@ -29,7 +29,9 @@ import com.example.coffeapp.viewmodel.MenuElementsViewModel;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MenuFragment extends Fragment implements MenuElementAdapter.ItemClickListener, MenuCategoryAdapter.ItemClickListener {
+public class MenuFragment
+        extends Fragment
+        implements MenuElementAdapter.ItemClickListener, MenuCategoryAdapter.ItemClickListener {
 
     private static final String TAG = "MenuFragment";
 
@@ -77,9 +79,10 @@ public class MenuFragment extends Fragment implements MenuElementAdapter.ItemCli
 
         menuCategoriesViewModel
                 .getMenuCategories()
-                .observe(getViewLifecycleOwner(), menuCategories -> {
-                    menuCategoryAdapter.setMenuCategories(menuCategories);
-                });
+                .observe(
+                        getViewLifecycleOwner(),
+                        menuCategories -> menuCategoryAdapter.setMenuCategories(menuCategories)
+                );
 
         menuElementsViewModel =
                 new ViewModelProvider(this).get(MenuElementsViewModel.class);
