@@ -2,11 +2,16 @@ package com.example.coffeapp.network;
 
 import com.example.coffeapp.model.MenuCategory;
 import com.example.coffeapp.model.MenuElement;
+import com.example.coffeapp.network.DTO.OrderDTO;
+import com.example.coffeapp.network.DTO.UserDTO;
 
 import java.util.List;
+import java.util.Map;
 
 import retrofit2.Call;
+import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.POST;
 
 public interface CoffeeAPI {
 
@@ -15,4 +20,13 @@ public interface CoffeeAPI {
 
     @GET("v1/menu-items")
     Call<List<MenuElement>> getAllMenuElements();
+
+    @GET("v1/users/token/refresh")
+    Call<Map<String, String>> refreshJwtToken();
+
+    @POST("v1/users")
+    Call<UserDTO> registerUser(@Body UserDTO user);
+
+    @POST("v1/orders")
+    Call<Integer> sendOrder(@Body OrderDTO order); // HttpStatus - это инт? сам класс просто из spring, тут его использование не предполагается как я понимаю
 }

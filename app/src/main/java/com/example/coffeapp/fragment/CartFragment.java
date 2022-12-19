@@ -1,14 +1,18 @@
 package com.example.coffeapp.fragment;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -17,9 +21,20 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.coffeapp.R;
 import com.example.coffeapp.adapter.CartElementsAdapter;
 import com.example.coffeapp.database.Cart;
+import com.example.coffeapp.network.CoffeeAPI;
+import com.example.coffeapp.network.DTO.OrderDTO;
+import com.example.coffeapp.network.RetrofitInstance;
 import com.example.coffeapp.viewmodel.CartViewModel;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class CartFragment extends Fragment implements CartElementsAdapter.CartClickedListener {
 
@@ -30,6 +45,7 @@ public class CartFragment extends Fragment implements CartElementsAdapter.CartCl
     private CartElementsAdapter cartElementsAdapter;
     private RecyclerView cartElementsRecyclerView;
     private TextView totalCartPriceTextView;
+    private Button makeOrderButton;
 
     public static CartFragment newInstance() {
         return new CartFragment();
@@ -76,6 +92,9 @@ public class CartFragment extends Fragment implements CartElementsAdapter.CartCl
 
     private void setViews(View view) {
         totalCartPriceTextView = view.findViewById(R.id.orderTotalTextView);
+
+        makeOrderButton = view.findViewById(R.id.loginButton);
+        makeOrderButton.setOnClickListener(view1 -> makeOrder());
     }
 
     private void setCartElementsRecyclerView(View view) {
@@ -121,5 +140,70 @@ public class CartFragment extends Fragment implements CartElementsAdapter.CartCl
         } else {
             cartViewModel.deleteCartItem(cart);
         }
+    }
+
+    private void makeOrder() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+
+        String accessToken = prefs.getString("accessTokenJWT", "");
+        String username = prefs.getString("username", "");
+
+        if (!accessToken.equals("") && !username.equals("")) {
+            trySendOrder(accessToken, username);
+            return;
+        }
+
+        String refreshToken = prefs.getString("refreshTokenJWT", "");
+        if (!refreshToken.equals("")) {
+            // TODO: refresh token
+            trySendOrder(accessToken, username);
+            return;
+        }
+
+        GoToAccount();
+    }
+
+    private void trySendOrder(String accessToken, String username) {
+        CoffeeAPI api = RetrofitInstance.getAuthorizedRetrofitClient(accessToken).create(CoffeeAPI.class);
+        // TODO: OrderDTO orderDTO = new OrderDTO(username, cartViewModel.getAllCartItems().getValue() - ???)
+        Map<Long, Integer> mockCart = new HashMap<>();
+        mockCart.put(1L,1);
+        OrderDTO orderDTO = new OrderDTO(username, mockCart);
+        Call<Integer> call = api.sendOrder(orderDTO);
+        call.enqueue(new Callback<Integer>() {
+            @Override
+            public void onResponse(Call<Integer> call, Response<Integer> response) {
+                if (response.body() == 403){
+                    GoToAccount();
+                } else {
+                    Snackbar
+                            .make(getView().findViewById(R.id.cartConstraintLayout), "Заказ отправлен", BaseTransientBottomBar.LENGTH_SHORT)
+                            .setTextColor(getResources().getColor(R.color.white))
+                            .setBackgroundTint(getResources().getColor(R.color.grey_default))
+                            .show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Integer> call, Throwable t) {
+                Snackbar
+                        .make(getView().findViewById(R.id.cartConstraintLayout), "Не получилось создать заказ", BaseTransientBottomBar.LENGTH_SHORT)
+                        .setTextColor(getResources().getColor(R.color.white))
+                        .setBackgroundTint(getResources().getColor(R.color.grey_default))
+                        .show();
+            }
+        });
+    }
+
+    private void GoToAccount(){
+        AccountLoginFragment accountLoginFragment = AccountLoginFragment.newInstance();
+
+        FragmentTransaction fragmentTransaction = getActivity()
+                .getSupportFragmentManager()
+                .beginTransaction();
+
+        fragmentTransaction.replace(R.id.fragment_container, accountLoginFragment);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
     }
 }
