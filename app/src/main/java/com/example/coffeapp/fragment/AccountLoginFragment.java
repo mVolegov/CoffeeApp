@@ -74,7 +74,55 @@ public class AccountLoginFragment extends Fragment {
     }
 
     private void login(){
-        // TODO: login
+        String username = loginEditText.toString();
+        String password = passwordEditText.toString();
+
+        if (username.equals("") || password.equals("")){
+            Snackbar
+                    .make(getView().findViewById(R.id.accountConstraintLayout), "Ошибка. Заполните обя поля", BaseTransientBottomBar.LENGTH_SHORT)
+                    .setTextColor(getResources().getColor(R.color.white))
+                    .setBackgroundTint(getResources().getColor(R.color.grey_default))
+                    .show();
+            return;
+        }
+
+        String cryptedPassword = hashPassword(password);
+
+        CoffeeAPI api = RetrofitInstance.getRetrofitClient().create(CoffeeAPI.class);
+        UserDTO userDTO = new UserDTO(username, cryptedPassword);
+        // TODO: отправить на эндпоинт логина (точно ли те поля у userDTO? если что в DTO классе есть SerializedName, там можешь указать)
+        // Call<UserDTO> call = api.login(userDTO);
+//        call.enqueue(new Callback<UserDTO>() {
+//            @Override
+//            public void onResponse(Call<UserDTO> call, Response<UserDTO> response) {
+//                // TODO: какой код возвращается если пароль и логин не те?
+//                if (response.code() == 401) {
+//                    Snackbar
+//                            .make(getView().findViewById(R.id.accountConstraintLayout), "Неверные данные", BaseTransientBottomBar.LENGTH_SHORT)
+//                            .setTextColor(getResources().getColor(R.color.white))
+//                            .setBackgroundTint(getResources().getColor(R.color.grey_default))
+//                            .show();
+//                    return;
+//                }
+//
+//                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+//                SharedPreferences.Editor editor = prefs.edit();
+//                // TODO: get jwt from call, надо смотреть что возвращаешь
+//                editor.putString("accessTokenJWT", "");
+//                editor.putString("refreshTokenJWT", "");
+//                editor.putString("username", username);
+//                editor.apply();
+//            }
+//
+//            @Override
+//            public void onFailure(Call<UserDTO> call, Throwable t) {
+//                Snackbar
+//                        .make(getView().findViewById(R.id.accountConstraintLayout), "Ошибка при входе", BaseTransientBottomBar.LENGTH_SHORT)
+//                        .setTextColor(getResources().getColor(R.color.white))
+//                        .setBackgroundTint(getResources().getColor(R.color.grey_default))
+//                        .show();
+//            }
+//        });
     }
 
     private void register(){
@@ -100,7 +148,7 @@ public class AccountLoginFragment extends Fragment {
             public void onResponse(Call<UserDTO> call, Response<UserDTO> response) {
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
                 SharedPreferences.Editor editor = prefs.edit();
-                // TODO: get jwt from call
+                // TODO: get jwt from call, надо смотреть что возвращаешь
                 editor.putString("accessTokenJWT", "");
                 editor.putString("refreshTokenJWT", "");
                 editor.putString("username", username);
@@ -119,6 +167,7 @@ public class AccountLoginFragment extends Fragment {
     }
 
     private String hashPassword(String password) {
+        // TODO: hash password
         return password;
     }
 }

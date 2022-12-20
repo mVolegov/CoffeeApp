@@ -1,11 +1,14 @@
 package com.example.coffeapp.network.DTO;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.Map;
 import java.util.Objects;
 
 public class OrderDTO {
+    @SerializedName("username")
     private String username;
-
+    @SerializedName("cart")
     private Map<Long, Integer> cart;
 
     public OrderDTO() {}
@@ -13,29 +16,6 @@ public class OrderDTO {
     public OrderDTO(String username, Map<Long, Integer> cart) {
         this.username = username;
         this.cart = cart;
-    }
-
-    @Override
-    public String toString() {
-        return "UserOrderDTO{" +
-                "username='" + username + '\'' +
-                ", cart=" + cart.toString() +
-                '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        OrderDTO that = (OrderDTO) o;
-
-        return Objects.equals(username, that.username) && Objects.equals(cart, that.cart);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(username, cart);
     }
 
     public String getUsername() {

@@ -22,11 +22,11 @@ public interface CoffeeAPI {
     Call<List<MenuElement>> getAllMenuElements();
 
     @GET("v1/users/token/refresh")
-    Call<Map<String, String>> refreshJwtToken();
+    Call<Map<String, String>> refreshJwtToken(String refreshToken);
 
     @POST("v1/users")
     Call<UserDTO> registerUser(@Body UserDTO user);
 
     @POST("v1/orders")
-    Call<Integer> sendOrder(@Body OrderDTO order); // HttpStatus - это инт? сам класс просто из spring, тут его использование не предполагается как я понимаю
+    Call<Integer> sendOrder(@Body OrderDTO order); // HttpStatus - int? или тело пустое, просто код какой то возвращается?
 }

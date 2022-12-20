@@ -154,8 +154,34 @@ public class CartFragment extends Fragment implements CartElementsAdapter.CartCl
         }
 
         String refreshToken = prefs.getString("refreshTokenJWT", "");
-        if (!refreshToken.equals("")) {
-            // TODO: refresh token
+        if (!refreshToken.equals("") && !username.equals("")) {
+            CoffeeAPI api = RetrofitInstance.getRetrofitClient().create(CoffeeAPI.class);
+            Call<Map<String, String>> call = api.refreshJwtToken(refreshToken);
+            call.enqueue(new Callback<Map<String, String>>() {
+                @Override
+                public void onResponse(Call<Map<String, String>> call, Response<Map<String, String>> response) {
+                    if (response.body() != null) {
+                        SharedPreferences.Editor editor = prefs.edit();
+                        if (response.body().containsKey("accessTokenJWT")) {
+                            editor.putString("accessTokenJWT", response.body().get("accessTokenJWT"));
+                        }
+                        if (response.body().containsKey("refreshTokenJWT")) {
+                            editor.putString("refreshTokenJWT", response.body().get("refreshTokenJWT"));
+                        }
+                        editor.apply();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Map<String, String>> call, Throwable t) {
+                    Snackbar
+                            .make(getView().findViewById(R.id.cartConstraintLayout), "Ошибка при обновлении токена", BaseTransientBottomBar.LENGTH_SHORT)
+                            .setTextColor(getResources().getColor(R.color.white))
+                            .setBackgroundTint(getResources().getColor(R.color.grey_default))
+                            .show();
+                }
+            });
+
             trySendOrder(accessToken, username);
             return;
         }
@@ -166,6 +192,7 @@ public class CartFragment extends Fragment implements CartElementsAdapter.CartCl
     private void trySendOrder(String accessToken, String username) {
         CoffeeAPI api = RetrofitInstance.getAuthorizedRetrofitClient(accessToken).create(CoffeeAPI.class);
         // TODO: OrderDTO orderDTO = new OrderDTO(username, cartViewModel.getAllCartItems().getValue() - ???)
+        //  вроде long - int словарь принимаешь, но тут в коде же нет такого
         Map<Long, Integer> mockCart = new HashMap<>();
         mockCart.put(1L,1);
         OrderDTO orderDTO = new OrderDTO(username, mockCart);
@@ -173,7 +200,7 @@ public class CartFragment extends Fragment implements CartElementsAdapter.CartCl
         call.enqueue(new Callback<Integer>() {
             @Override
             public void onResponse(Call<Integer> call, Response<Integer> response) {
-                if (response.body() == 403){
+                if (response.code() == 403){
                     GoToAccount();
                 } else {
                     Snackbar

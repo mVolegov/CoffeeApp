@@ -6,6 +6,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
@@ -50,6 +51,21 @@ public class AccountPageFragment extends Fragment {
     }
 
     private void logout() {
-        // TODO: logout
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.remove("accessTokenJWT");
+        editor.remove("refreshTokenJWT");
+        editor.remove("username");
+        editor.apply();
+
+        AccountLoginFragment accountLoginFragment = AccountLoginFragment.newInstance();
+
+        FragmentTransaction fragmentTransaction = getActivity()
+                .getSupportFragmentManager()
+                .beginTransaction();
+
+        fragmentTransaction.replace(R.id.fragment_container, accountLoginFragment);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
     }
 }
